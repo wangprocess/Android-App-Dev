@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Ch3Ex</string>
+    <string name="btn1">Homework1</string>
+    <string name="btn2">Homework2</string>
+    <string name="btn3">Homework3</string>
+    <string name="duration_hint">动画时长，单位毫秒，范围在 100 ~ 10000</string>
+    <string name="invalid_duration">时长设置不合理，请输入范围在 100 ~ 10000 的值</string>
+    <string name="rainbow_text">^_^ 彩虹字体 ^_^ La La La ~</string>
+
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="tab1">好友列表</string>
+    <string name="tab2">我的好友</string>
+    <string name="hello_fragment">Hello Fragment\n</string>
+</resources>
