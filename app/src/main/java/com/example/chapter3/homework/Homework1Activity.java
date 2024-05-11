@@ -1,121 +1,62 @@
 package com.example.chapter3.homework;
 
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
-import android.view.animation.AlphaAnimation;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.SeekBar;
 
 import com.airbnb.lottie.LottieAnimationView;
 
 public class Homework1Activity extends AppCompatActivity {
-
-    private static final int PAGE_COUNT = 2;
+    private LottieAnimationView animationView;
+    private CheckBox loopCheckBox;
+    private SeekBar seekBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_homework1);
-        ViewPager pager = findViewById(R.id.viewPager);
-        TabLayout tabLayout = findViewById(R.id.tab_layout);
-        final LottieAnimationView lottieAnimationView = findViewById(R.id.animation_view);
-        final FriendsFragment friendsFragment = new FriendsFragment();
-        final MyFriendsFragment myFriendsFragment = new MyFriendsFragment();
-        pager.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager()) {
-            @Override
-            public Fragment getItem(int i) {
-                if (i == 0){
-                    return friendsFragment;
-                }
-                else {
-                    return myFriendsFragment;
-                }
-            }
 
-            @Override
-            public int getCount() {
-                return PAGE_COUNT;
-            }
+        animationView = findViewById(R.id.animation_view);
+        loopCheckBox = findViewById(R.id.loop_checkbox);
+        seekBar = findViewById(R.id.seekbar);
 
+        loopCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public CharSequence getPageTitle(int position) {
-                if (position == 0){
-                    return "好友列表";
-                }
-                else return "我的好友";
-            }
-        });
-        pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                // This method will be invoked when the ViewPager is scrolled, but before the current page changes.
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                // This method will be invoked when a new page becomes selected.
-                if (position == 0) {
-                    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                    transaction.hide(friendsFragment);
-                    transaction.commit();
-                    lottieAnimationView.setVisibility(View.VISIBLE);
-                    lottieAnimationView.playAnimation();
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            // 使用淡入淡出动画显示实际列表
-                            AlphaAnimation fadeInAnimation = new AlphaAnimation(0.0f, 1.0f);
-                            fadeInAnimation.setDuration(1000); // 设置动画持续时间为 1 秒
-
-                            // 使用 FragmentTransaction 添加 FriendsFragment
-                            getSupportFragmentManager().beginTransaction()
-                                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-                                    .show(friendsFragment)
-                                    .commit();
-
-                            // 隐藏 Lottie 动画
-                            lottieAnimationView.setVisibility(View.GONE);
-                        }
-                    }, 5000); // 5000 毫秒为 5 秒
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    // 当选中自动播放的时候，开始播放 lottie 动画，同时禁止手动修改进度
+                    animationView.playAnimation();
+                    seekBar.setEnabled(false);
                 } else {
-                    lottieAnimationView.setVisibility(View.GONE);
+                    // 当去除自动播放时，停止播放 lottie 动画，同时允许手动修改进度
+                    animationView.pauseAnimation();
+                    seekBar.setEnabled(true);
                 }
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-                // This method will be invoked when the scroll state changes.
             }
         });
 
-        tabLayout.setupWithViewPager(pager);
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.hide(friendsFragment);
-        transaction.commit();
-        lottieAnimationView.setVisibility(View.VISIBLE);
-        lottieAnimationView.playAnimation();
-        new Handler().postDelayed(new Runnable() {
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void run() {
-                // 使用淡入淡出动画显示实际列表
-                AlphaAnimation fadeInAnimation = new AlphaAnimation(0.0f, 1.0f);
-                fadeInAnimation.setDuration(1000); // 设置动画持续时间为 1 秒
-
-                // 使用 FragmentTransaction 添加 FriendsFragment
-                getSupportFragmentManager().beginTransaction()
-                        .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-                        .show(friendsFragment)
-                        .commit();
-
-                // 隐藏 Lottie 动画
-                lottieAnimationView.setVisibility(View.GONE);
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                // TODO ex1-2: 这里应该调用哪个函数呢
+                // 提示1：可以参考 https://airbnb.io/lottie/#/android?id=custom-animators
+                // 提示2：SeekBar 的文档可以把鼠标放在 OnProgressChanged 中间，并点击 F1 查看，
+                // 或者到官网查询 https://developer.android.google.cn/reference/android/widget/SeekBar.OnSeekBarChangeListener.html#onProgressChanged(android.widget.SeekBar,%20int,%20boolean
+                // 计算进度值（0-1 范围）
+                float animationProgress = (float) progress / seekBar.getMax();
+                // 设置动画进度
+                animationView.setProgress(animationProgress);
             }
-        }, 5000); // 5000 毫秒为 5 秒
-    }
 
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
+    }
 }
